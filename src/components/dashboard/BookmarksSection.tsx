@@ -1,20 +1,22 @@
 import { Bookmark, ExternalLink } from "lucide-react"
 
+import { dashboardSectionLabelClassName } from "@/components/dashboard/dashboard-section-label-classes"
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { dashboardSectionLabelClassName } from "@/components/dashboard/dashboard-section-label-classes"
-import { MOCK_BOOKMARKS } from "@/data/dashboard-mock"
+import { useDashboardState } from "@/context/dashboard-state"
 import { cn } from "@/lib/utils"
 
 export function BookmarksSection() {
+    const { bookmarks } = useDashboardState()
+
     return (
         <article className="rounded-2xl bg-card p-6 shadow-md ring-1 ring-border/40 lg:p-7">
             <h2 className={dashboardSectionLabelClassName}>Bookmarks</h2>
             <ul className="mt-5 flex flex-col gap-1">
-                {MOCK_BOOKMARKS.map((item) => (
+                {bookmarks.map((item) => (
                     <li key={item.id}>
                         <Tooltip>
                             <TooltipTrigger asChild>

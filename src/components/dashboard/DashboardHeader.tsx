@@ -1,5 +1,13 @@
 import dayjs from "dayjs"
-import { Mic, Moon, ScanSearch, Search, Settings, Sun } from "lucide-react"
+import {
+    MessageSquare,
+    Mic,
+    Moon,
+    ScanSearch,
+    Search,
+    Settings,
+    Sun,
+} from "lucide-react"
 import {
     type ChangeEvent,
     type FormEvent,
@@ -58,7 +66,11 @@ function getSpeechRecognitionCtor():
     return window.SpeechRecognition ?? window.webkitSpeechRecognition
 }
 
-export function DashboardHeader() {
+type DashboardHeaderProps = {
+    onOpenAssistant?: () => void
+}
+
+export function DashboardHeader({ onOpenAssistant }: DashboardHeaderProps) {
     const { theme, setTheme, searchUrlTemplate } = useTheme()
     const [now, setNow] = useState(() => new Date())
     const [settingsOpen, setSettingsOpen] = useState(false)
@@ -260,6 +272,28 @@ export function DashboardHeader() {
                                 : "Dark mode"}
                         </TooltipContent>
                     </Tooltip>
+                    {onOpenAssistant ? (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="rounded-full text-muted-foreground"
+                                    aria-label="Open assistant"
+                                    onClick={onOpenAssistant}
+                                >
+                                    <MessageSquare
+                                        className="size-5"
+                                        strokeWidth={2}
+                                    />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom" sideOffset={6}>
+                                Chat assistant
+                            </TooltipContent>
+                        </Tooltip>
+                    ) : null}
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button

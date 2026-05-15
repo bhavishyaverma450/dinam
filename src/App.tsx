@@ -1,3 +1,6 @@
+import { useState } from "react"
+
+import { AssistantPanel } from "@/components/dashboard/AssistantPanel"
 import { BookmarksSection } from "@/components/dashboard/BookmarksSection"
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader"
 import { QuoteCard } from "@/components/dashboard/QuoteCard"
@@ -9,6 +12,7 @@ import { cn } from "@/lib/utils"
 
 const App = () => {
     const { dashboardWallpaper } = useTheme()
+    const [assistantOpen, setAssistantOpen] = useState(false)
 
     return (
         <div
@@ -34,7 +38,9 @@ const App = () => {
                 </>
             ) : null}
             <div className="relative z-0 mx-auto w-full max-w-6xl px-6 pt-8 pb-10 lg:px-8 lg:pb-12">
-                <DashboardHeader />
+                <DashboardHeader
+                    onOpenAssistant={() => setAssistantOpen(true)}
+                />
 
                 <div className="mt-14 grid grid-cols-1 gap-6 lg:mt-16 lg:grid-cols-12 lg:gap-8">
                     <div className="flex flex-col gap-6 lg:col-span-3">
@@ -52,6 +58,11 @@ const App = () => {
                     </div>
                 </div>
             </div>
+
+            <AssistantPanel
+                open={assistantOpen}
+                onOpenChange={setAssistantOpen}
+            />
         </div>
     )
 }

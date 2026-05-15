@@ -2,42 +2,23 @@ import { Check, Pencil, Plus, Trash2 } from "lucide-react"
 import { useCallback, useRef, useState } from "react"
 
 import { dashboardSectionLabelClassName } from "@/components/dashboard/dashboard-section-label-classes"
+import { useDashboardState } from "@/context/dashboard-state"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-type TodoMock = {
-    id: string
-    label: string
-    done: boolean
-}
-
-function newTodoId() {
-    return `t-${crypto.randomUUID()}`
-}
-
 export function TasksSection() {
-    const [todos, setTodos] = useState<TodoMock[]>([])
+    const { todos, toggleTodo, deleteTodo, addTodo, updateTodo } =
+        useDashboardState()
     const [newTaskLabel, setNewTaskLabel] = useState("")
     const [editingId, setEditingId] = useState<string | null>(null)
     const [editLabel, setEditLabel] = useState("")
     const skipEditCommitOnBlur = useRef(false)
 
-    const toggleTodo = (id: string) => {
-        setTodos((prev) =>
-            prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
-        )
-    }
-
     const addTask = () => {
         const label = newTaskLabel.trim()
         if (!label) return
-        setTodos((prev) => [...prev, { id: newTodoId(), label, done: false }])
+        addTodo(label)
         setNewTaskLabel("")
-    }
-
-    const deleteTodo = (id: string) => {
-        setTodos((prev) => prev.filter((t) => t.id !== id))
-        setEditingId((cur) => (cur === id ? null : cur))
     }
 
     const startEditTodo = (id: string, label: string) => {
@@ -53,11 +34,9 @@ export function TasksSection() {
             setEditingId(null)
             return
         }
-        setTodos((prev) =>
-            prev.map((t) => (t.id === id ? { ...t, label } : t)),
-        )
+        updateTodo(id, { label })
         setEditingId(null)
-    }, [editLabel, editingId])
+    }, [editLabel, editingId, updateTodo])
 
     const onEditTodoBlur = () => {
         if (skipEditCommitOnBlur.current) {

@@ -8,11 +8,15 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useDashboardState } from "@/context/dashboard-state"
 import {
-    MOCK_QUICK_LAUNCH,
     QUICK_LAUNCH_ICON_POOL,
     type QuickLaunchItem,
 } from "@/data/dashboard-mock"
+import {
+    fallbackNameFromQuickLaunchHref,
+    normalizeQuickLaunchHref,
+} from "@/lib/quick-launch-utils"
 
 import {
     QuickLaunchEditModal,
@@ -20,38 +24,15 @@ import {
 } from "./QuickLaunchEditModal"
 import { QuickLaunchIcon } from "./QuickLaunchIcon"
 
-function normalizeHref(raw: string): string {
-    let href = raw.trim()
-    if (!href) return "#"
-    if (
-        !href.startsWith("http://") &&
-        !href.startsWith("https://") &&
-        href !== "#"
-    ) {
-        href = `https://${href}`
-    }
-    return href
-}
-
-function fallbackNameFromHref(href: string): string {
-    if (href === "#") return "Link"
-    try {
-        const u = new URL(href)
-        return u.hostname.replace(/^www\./, "") || "Link"
-    } catch {
-        return "Link"
-    }
-}
-
 function draftToItems(draft: QuickLaunchDraftSlot[]): QuickLaunchItem[] {
     const next: QuickLaunchItem[] = []
     for (const slot of draft) {
         const nameRaw = slot.name.trim()
         const hrefRaw = slot.href.trim()
         if (!nameRaw && !hrefRaw) continue
-        const href = normalizeHref(hrefRaw)
+        const href = normalizeQuickLaunchHref(hrefRaw)
         if (!nameRaw && href === "#") continue
-        const name = nameRaw || fallbackNameFromHref(href)
+        const name = nameRaw || fallbackNameFromQuickLaunchHref(href)
         const icon =
             slot.icon ??
             QUICK_LAUNCH_ICON_POOL[next.length % QUICK_LAUNCH_ICON_POOL.length]!
@@ -66,10 +47,10 @@ function draftToItems(draft: QuickLaunchDraftSlot[]): QuickLaunchItem[] {
 }
 
 export function QuickLaunchPanel() {
-    const [items, setItems] = useState<QuickLaunchItem[]>(MOCK_QUICK_LAUNCH)
+    const { quickLaunchItems, setQuickLaunchItems } = useDashboardState()
     const [modalOpen, setModalOpen] = useState(false)
     const [draft, setDraft] = useState<QuickLaunchDraftSlot[]>(() =>
-        MOCK_QUICK_LAUNCH.map((item) => ({
+        quickLaunchItems.map((item) => ({
             id: item.id,
             name: item.name,
             href: item.href === "#" ? "" : item.href,
@@ -79,8 +60,8 @@ export function QuickLaunchPanel() {
 
     const openModal = () => {
         setDraft(
-            items.length > 0
-                ? items.map((item) => ({
+            quickLaunchItems.length > 0
+                ? quickLaunchItems.map((item) => ({
                     id: item.id,
                     name: item.name,
                     href: item.href === "#" ? "" : item.href,
@@ -92,7 +73,7 @@ export function QuickLaunchPanel() {
     }
 
     const save = () => {
-        setItems(draftToItems(draft))
+        setQuickLaunchItems(draftToItems(draft))
         setModalOpen(false)
     }
 
@@ -121,7 +102,7 @@ export function QuickLaunchPanel() {
                         </TooltipContent>
                     </Tooltip>
                 </div>
-                {items.length === 0 ? (
+                {quickLaunchItems.length === 0 ? (
                     <p className="mt-6 text-sm text-muted-foreground">
                         No shortcuts yet.{" "}
                         <button
@@ -134,7 +115,7 @@ export function QuickLaunchPanel() {
                     </p>
                 ) : (
                     <div className="mt-6 grid grid-cols-4 gap-3 sm:gap-4">
-                        {items.map((item) => (
+                        {quickLaunchItems.map((item) => (
                             <Tooltip key={item.id}>
                                 <TooltipTrigger asChild>
                                     <a
