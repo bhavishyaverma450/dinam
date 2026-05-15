@@ -1,5 +1,7 @@
 # Dinam
 
+[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE)
+
 Dinam is a **Chrome extension** that replaces your **new tab** page with a personal dashboard. It brings quick launch shortcuts, bookmarks, a daily quote, tasks, and a tech news column into one responsive layout. Appearance is customizable: theme accents, optional wallpaper, and layout-adjacent settings live in the dashboard header.
 
 Data for bookmarks, tasks, news, and quick launch items is currently driven by mock modules under `src/data/`—a natural place to swap in real APIs, `chrome.storage`, or other persistence later.
@@ -119,3 +121,7 @@ We welcome issues and pull requests. Please keep changes focused and consistent 
 ### Reporting bugs
 
 Include: what you expected, what happened, Chrome version, OS, whether you saw it in **dev** (`npm run dev`) or **packed/unpacked extension**, and minimal steps to reproduce. Screenshots help for visual issues.
+
+## License
+
+[PolyForm Noncommercial License 1.0.0](LICENSE) — free for personal and noncommercial use. Commercial use requires explicit permission from the author.

@@ -3,7 +3,8 @@
     "allow": [
       "Bash(Get-ChildItem -Path \"e:\\\\Workspace\\\\dinam\" -Force)",
       "Bash(Select-Object Name)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "WebFetch(domain:polyformproject.org)"
     ]
   }
 }
