@@ -1,18 +1,18 @@
-"use client";
+"use client"
 
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-import { cn } from "@/lib/utils";
+import type { Variants } from "motion/react"
+import { motion, useAnimation } from "motion/react"
+import type { HTMLAttributes } from "react"
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react"
+import { cn } from "@/lib/utils"
 
 export interface CameraIconHandle {
-  startAnimation: () => void;
-  stopAnimation: () => void;
+  startAnimation: () => void
+  stopAnimation: () => void
 }
 
 interface CameraIconProps extends HTMLAttributes<HTMLDivElement> {
-  size?: number;
+  size?: number
 }
 
 const BODY_VARIANTS: Variants = {
@@ -21,7 +21,7 @@ const BODY_VARIANTS: Variants = {
     scale: [1, 0.92, 1],
     transition: { duration: 0.25, ease: [0.36, 0.07, 0.19, 0.97] },
   },
-};
+}
 
 const LENS_VARIANTS: Variants = {
   normal: { scale: 1 },
@@ -29,7 +29,7 @@ const LENS_VARIANTS: Variants = {
     scale: [1, 1.15, 0.95, 1],
     transition: { duration: 0.3, ease: "easeOut" },
   },
-};
+}
 
 const FLASH_VARIANTS: Variants = {
   normal: { opacity: 1, scale: 1 },
@@ -38,42 +38,42 @@ const FLASH_VARIANTS: Variants = {
     scale: [1, 1.4, 1],
     transition: { duration: 0.25, ease: "easeInOut" },
   },
-};
+}
 
 const CameraIcon = forwardRef<CameraIconHandle, CameraIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+    const controls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
       return {
         startAnimation: () => controls.start("animate"),
         stopAnimation: () => controls.start("normal"),
-      };
-    });
+      }
+    })
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (isControlledRef.current) {
-          onMouseEnter?.(e);
+          onMouseEnter?.(e)
         } else {
-          controls.start("animate");
+          controls.start("animate")
         }
       },
       [controls, onMouseEnter]
-    );
+    )
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (isControlledRef.current) {
-          onMouseLeave?.(e);
+          onMouseLeave?.(e)
         } else {
-          controls.start("normal");
+          controls.start("normal")
         }
       },
       [controls, onMouseLeave]
-    );
+    )
 
     return (
       <div
@@ -97,13 +97,22 @@ const CameraIcon = forwardRef<CameraIconHandle, CameraIconProps>(
           xmlns="http://www.w3.org/2000/svg"
         >
           <path d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
-          <motion.path d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z" style={{ transformOrigin: "12px 12.75px" }} variants={LENS_VARIANTS} />
-          <motion.path d="M18.75 10.5h.008v.008h-.008V10.5Z" strokeWidth="2.5" style={{ transformOrigin: "18.75px 10.5px" }} variants={FLASH_VARIANTS} />
+          <motion.path
+            d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"
+            style={{ transformOrigin: "12px 12.75px" }}
+            variants={LENS_VARIANTS}
+          />
+          <motion.path
+            d="M18.75 10.5h.008v.008h-.008V10.5Z"
+            strokeWidth="2.5"
+            style={{ transformOrigin: "18.75px 10.5px" }}
+            variants={FLASH_VARIANTS}
+          />
         </motion.svg>
       </div>
-    );
+    )
   }
-);
+)
 
-CameraIcon.displayName = "CameraIcon";
-export { CameraIcon };
+CameraIcon.displayName = "CameraIcon"
+export { CameraIcon }

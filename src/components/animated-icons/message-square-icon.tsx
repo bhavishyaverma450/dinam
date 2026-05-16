@@ -1,18 +1,18 @@
-"use client";
+"use client"
 
-import { motion, useAnimation, type Variants } from "framer-motion";
-import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { motion, useAnimation, type Variants } from "framer-motion"
+import type { HTMLAttributes } from "react"
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 export interface MessageSquareIconHandle {
-  startAnimation: () => void;
-  stopAnimation: () => void;
+  startAnimation: () => void
+  stopAnimation: () => void
 }
 
 interface MessageSquareIconProps extends HTMLAttributes<HTMLDivElement> {
-  size?: number;
+  size?: number
 }
 
 const ICON_VARIANTS: Variants = {
@@ -35,45 +35,45 @@ const ICON_VARIANTS: Variants = {
       },
     },
   },
-};
+}
 
 const MessageSquareIcon = forwardRef<
   MessageSquareIconHandle,
   MessageSquareIconProps
 >(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-  const controls = useAnimation();
-  const isControlledRef = useRef(false);
+  const controls = useAnimation()
+  const isControlledRef = useRef(false)
 
   useImperativeHandle(ref, () => {
-    isControlledRef.current = true;
+    isControlledRef.current = true
 
     return {
       startAnimation: () => controls.start("animate"),
       stopAnimation: () => controls.start("normal"),
-    };
-  });
+    }
+  })
 
   const handleMouseEnter = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (isControlledRef.current) {
-        onMouseEnter?.(e);
+        onMouseEnter?.(e)
       } else {
-        controls.start("animate");
+        controls.start("animate")
       }
     },
     [controls, onMouseEnter]
-  );
+  )
 
   const handleMouseLeave = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (isControlledRef.current) {
-        onMouseLeave?.(e);
+        onMouseLeave?.(e)
       } else {
-        controls.start("normal");
+        controls.start("normal")
       }
     },
     [controls, onMouseLeave]
-  );
+  )
 
   return (
     <div
@@ -98,9 +98,9 @@ const MessageSquareIcon = forwardRef<
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </motion.svg>
     </div>
-  );
-});
+  )
+})
 
-MessageSquareIcon.displayName = "MessageSquareIcon";
+MessageSquareIcon.displayName = "MessageSquareIcon"
 
-export { MessageSquareIcon };
+export { MessageSquareIcon }

@@ -1,42 +1,51 @@
-"use client";
+"use client"
 
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import { forwardRef, useImperativeHandle, useRef } from "react";
-import { cn } from "@/lib/utils";
+import type { Variants } from "motion/react"
+import { motion, useAnimation } from "motion/react"
+import { forwardRef, useImperativeHandle, useRef } from "react"
+import { cn } from "@/lib/utils"
 
 export interface TerminalIconHandle {
-  startAnimation: () => void;
-  stopAnimation: () => void;
+  startAnimation: () => void
+  stopAnimation: () => void
 }
 
 interface TerminalIconProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: number;
+  size?: number
 }
 
 const cursorVariants: Variants = {
   normal: { opacity: 1 },
-  animate: { opacity: [1, 0, 1], transition: { duration: 0.6, repeat: Infinity, ease: "steps(2, start)" } },
-};
+  animate: {
+    opacity: [1, 0, 1],
+    transition: { duration: 0.6, repeat: Infinity, ease: "steps(2, start)" as any },
+  },
+}
 
 const SquareTerminalIcon = forwardRef<TerminalIconHandle, TerminalIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 24, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+    const controls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
       return {
         startAnimation: () => controls.start("animate"),
         stopAnimation: () => controls.start("normal"),
-      };
-    });
+      }
+    })
 
     return (
       <div
         className={cn("inline-flex items-center justify-center", className)}
-        onMouseEnter={(e) => isControlledRef.current ? onMouseEnter?.(e) : controls.start("animate")}
-        onMouseLeave={(e) => isControlledRef.current ? onMouseLeave?.(e) : controls.start("normal")}
+        onMouseEnter={(e) =>
+          isControlledRef.current
+            ? onMouseEnter?.(e)
+            : controls.start("animate")
+        }
+        onMouseLeave={(e) =>
+          isControlledRef.current ? onMouseLeave?.(e) : controls.start("normal")
+        }
         {...props}
       >
         <motion.svg
@@ -57,8 +66,8 @@ const SquareTerminalIcon = forwardRef<TerminalIconHandle, TerminalIconProps>(
           <motion.path d="M13 15h4" variants={cursorVariants} />
         </motion.svg>
       </div>
-    );
+    )
   }
-);
-SquareTerminalIcon.displayName = "SquareTerminalIcon";
-export { SquareTerminalIcon };
+)
+SquareTerminalIcon.displayName = "SquareTerminalIcon"
+export { SquareTerminalIcon }

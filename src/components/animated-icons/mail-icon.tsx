@@ -1,17 +1,17 @@
-"use client";
+"use client"
 
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-import { cn } from "@/lib/utils";
+import type { Variants } from "motion/react"
+import { motion, useAnimation } from "motion/react"
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react"
+import { cn } from "@/lib/utils"
 
 export interface MailIconHandle {
-  startAnimation: () => void;
-  stopAnimation: () => void;
+  startAnimation: () => void
+  stopAnimation: () => void
 }
 
 interface MailIconProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: number;
+  size?: number
 }
 
 const lidVariants: Variants = {
@@ -20,30 +20,36 @@ const lidVariants: Variants = {
     d: "M22 6.5l-10 4-10-4",
     transition: { duration: 0.25, ease: "easeInOut" },
   },
-};
+}
 
 const MailIcon = forwardRef<MailIconHandle, MailIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 24, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+    const controls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
       return {
         startAnimation: () => controls.start("animate"),
         stopAnimation: () => controls.start("normal"),
-      };
-    });
+      }
+    })
 
-    const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-      if (isControlledRef.current) onMouseEnter?.(e);
-      else controls.start("animate");
-    }, [controls, onMouseEnter]);
+    const handleMouseEnter = useCallback(
+      (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isControlledRef.current) onMouseEnter?.(e)
+        else controls.start("animate")
+      },
+      [controls, onMouseEnter]
+    )
 
-    const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-      if (isControlledRef.current) onMouseLeave?.(e);
-      else controls.start("normal");
-    }, [controls, onMouseLeave]);
+    const handleMouseLeave = useCallback(
+      (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isControlledRef.current) onMouseLeave?.(e)
+        else controls.start("normal")
+      },
+      [controls, onMouseLeave]
+    )
 
     return (
       <div
@@ -69,8 +75,8 @@ const MailIcon = forwardRef<MailIconHandle, MailIconProps>(
           <motion.path variants={lidVariants} />
         </motion.svg>
       </div>
-    );
+    )
   }
-);
-MailIcon.displayName = "MailIcon";
-export { MailIcon };
+)
+MailIcon.displayName = "MailIcon"
+export { MailIcon }
