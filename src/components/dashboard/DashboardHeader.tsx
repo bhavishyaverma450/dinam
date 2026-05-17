@@ -304,7 +304,7 @@ export function DashboardHeader({ onOpenAssistant }: DashboardHeaderProps) {
           <span className="text-primary/55">•</span>
           <span className="inline-flex items-center gap-1 text-foreground/85">
             <WeatherIcon
-              className="size-3.5 shrink-0 text-chart-1"
+              className="size-3.5 shrink-0 text-current"
               strokeWidth={2}
               aria-hidden
             />
