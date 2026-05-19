@@ -33,6 +33,7 @@ import {
     openGoogleSearchByImage,
     resolveNavigationHref,
 } from "@/lib/search-engine"
+import { getCreativeGreeting } from "@/utils/greetings"
 
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)"
 
@@ -48,27 +49,6 @@ function getPreferredColorSchemeSnapshot(): "dark" | "light" {
 
 function getPreferredColorSchemeServerSnapshot(): "dark" | "light" {
     return "light"
-}
-
-function isEditableTarget(target: EventTarget | null): boolean {
-    if (!(target instanceof HTMLElement)) {
-        return false
-    }
-    if (target.isContentEditable) {
-        return true
-    }
-    return Boolean(
-        target.closest(
-            "input, textarea, [contenteditable='true'], [contenteditable='']",
-        ),
-    )
-}
-
-function timeOfDayGreeting(hour: number): string {
-    if (hour >= 5 && hour < 12) return "Good morning"
-    if (hour >= 12 && hour < 17) return "Good afternoon"
-    if (hour >= 17 && hour < 22) return "Good evening"
-    return "Good night"
 }
 
 function getSpeechRecognitionCtor():
@@ -89,10 +69,8 @@ export function DashboardHeader({ onOpenAssistant }: DashboardHeaderProps) {
     const [now, setNow] = useState(() => new Date())
     const [settingsOpen, setSettingsOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
-    const [searchFocused, setSearchFocused] = useState(false)
     const [voiceListening, setVoiceListening] = useState(false)
     const imageSearchInputRef = useRef<HTMLInputElement>(null)
-    const searchInputRef = useRef<HTMLInputElement>(null)
     const speechRecognitionRef = useRef<SpeechRecognition | null>(null)
     const lastVoiceTranscriptRef = useRef("")
     const voiceUserStoppedRef = useRef(false)
@@ -115,36 +93,6 @@ export function DashboardHeader({ onOpenAssistant }: DashboardHeaderProps) {
             speechRecognitionRef.current?.abort()
             speechRecognitionRef.current = null
         }
-    }, [])
-
-    useEffect(() => {
-        const handleShortcut = (event: KeyboardEvent) => {
-            if (event.defaultPrevented || event.isComposing) {
-                return
-            }
-
-            if (isEditableTarget(event.target)) {
-                return
-            }
-
-            const key = event.key.toLowerCase()
-            const isSlash = event.key === "/"
-            const isFind = (event.ctrlKey || event.metaKey) && key === "k"
-
-            if (!isSlash && !isFind) {
-                return
-            }
-
-            if (isSlash && (event.ctrlKey || event.metaKey || event.altKey)) {
-                return
-            }
-
-            event.preventDefault()
-            searchInputRef.current?.focus()
-        }
-
-        window.addEventListener("keydown", handleShortcut)
-        return () => window.removeEventListener("keydown", handleShortcut)
     }, [])
 
     const runSearchNavigation = useCallback(() => {
@@ -247,9 +195,12 @@ export function DashboardHeader({ onOpenAssistant }: DashboardHeaderProps) {
         [],
     )
 
+    // Maintained dayjs formatting configurations requested by reviewer
     const timeWithPeriod = dayjs(now).format("h:mm A")
     const shortDateLine = dayjs(now).format("dddd, MMM D").toUpperCase()
-    const greeting = timeOfDayGreeting(dayjs(now).hour())
+    
+    // Memoized tracking dependency array by the exact hour to prevent jumping text variations on clock ticks
+    const greeting = useMemo(() => getCreativeGreeting(), [now.getHours()])
 
     return (
         <header className="w-full">
@@ -366,13 +317,18 @@ export function DashboardHeader({ onOpenAssistant }: DashboardHeaderProps) {
             />
 
             <div className="mt-10 flex flex-col items-center text-center sm:mt-14">
-                <p className="text-6xl font-bold tracking-tight text-foreground sm:text-7xl md:text-8xl">
-                    {greeting}
-                </p>
-
+                {/* Optimized spacing properties to compact vertical margins for wrapped lines */}
+                <div className="w-full max-w-4xl min-h-[7rem] flex items-center justify-center">
+                    <p className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-5xl font-bold tracking-tight text-foreground leading-none sm:text-6xl md:text-7xl lg:text-8xl select-none">
+                        <span className="inline-block max-w-3xl text-balance leading-tight">{greeting.text}</span>
+                        <span className="inline-block shrink-0 animate-pulse align-middle text-5xl sm:text-6xl md:text-7xl lg:text-8xl manual-emoji-reset leading-none">
+                            {greeting.emoji}
+                        </span>
+                    </p>
+                </div>
 
                 <form
-                    className="relative mt-8 w-full max-w-xl sm:mt-10"
+                    className="relative mt-6 w-full max-w-xl sm:mt-8"
                     onSubmit={handleSearchSubmit}
                 >
                     <label htmlFor="dashboard-search" className="sr-only">
@@ -396,29 +352,13 @@ export function DashboardHeader({ onOpenAssistant }: DashboardHeaderProps) {
                         id="dashboard-search"
                         name="q"
                         type="search"
-                        ref={searchInputRef}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        onFocus={() => setSearchFocused(true)}
-                        onBlur={() => setSearchFocused(false)}
-                        onKeyDown={(event) => {
-                            if (event.key === "Escape") {
-                                event.currentTarget.blur()
-                            }
-                        }}
                         placeholder="Search the web or type a URL"
                         autoComplete="off"
-                        className="h-auto rounded-full border-border/80 bg-card py-3.5 pr-28 pl-14 text-center shadow-sm placeholder:text-muted-foreground focus-visible:ring-ring/25 sm:text-left"
+                        className="h-auto rounded-full border-border/80 bg-card py-3.5 pr-21 pl-14 text-center shadow-sm placeholder:text-muted-foreground focus-visible:ring-ring/25 sm:text-left"
                     />
                     <div className="absolute top-1/2 right-2 z-1 flex -translate-y-1/2 items-center gap-0.5">
-                        {!searchFocused ? (
-                            <kbd
-                                aria-hidden
-                                className="pointer-events-none inline-flex h-5 items-center rounded-md border border-border/70 px-1.5 text-[10px] font-medium text-muted-foreground"
-                            >
-                                /
-                            </kbd>
-                        ) : null}
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
