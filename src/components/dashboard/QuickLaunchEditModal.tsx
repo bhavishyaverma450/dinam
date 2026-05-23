@@ -176,8 +176,18 @@ export function QuickLaunchEditModal({
             onClick={() => {
               const urls = new Set<string>()
               for (const slot of draft) {
+                const t = slot.title.trim()
                 const u = slot.url.trim().toLowerCase()
-                if (!u || u === "#") continue
+                
+                // Ignore completely empty slots (they are just deleted on save)
+                if (!t && (!u || u === "#")) continue
+
+                // Check if they forgot the URL
+                if (!u || u === "#") {
+                  setErrorMessage("Please provide a URL for all shortcuts.")
+                  return
+                }
+
                 if (urls.has(u)) {
                   setErrorMessage("This link has already been added to your dashboard.")
                   return
