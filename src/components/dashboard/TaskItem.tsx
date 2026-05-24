@@ -1,6 +1,8 @@
-import { Check, Pencil, Trash2, Calendar } from "lucide-react"
+import { Check, Pencil, Trash2, Calendar, GripVertical } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { type DashboardTodo } from "@/context/dashboard-state"
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 
 interface TaskItemProps {
   todo: DashboardTodo
@@ -59,12 +61,46 @@ export function TaskItem({
   const formattedStart = formatTaskDate(todo.startDate)
   const formattedDue = formatTaskDate(todo.dueDate)
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: todo.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
   return (
-    <li className="group/task flex flex-col gap-2.5 rounded-xl border border-border/30 bg-muted/20 p-3.5 transition-colors hover:bg-muted/40">
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "group/task flex flex-col gap-2.5 rounded-xl border border-border/30 bg-muted/20 p-3.5 transition-colors hover:bg-muted/40",
+        isDragging && "z-50 opacity-80 shadow-lg ring-2 ring-primary/30"
+      )}
+    >
       {/* CORE COMPONENT GRID LAYOUT */}
       <div className="grid w-full grid-cols-12 items-center gap-2">
-        {/* 1. Task Name Column (col-span-5) */}
-        <div className="col-span-5 flex min-w-0 items-center gap-2">
+        {/* Drag Handle Column (col-span-1) */}
+        <div className="col-span-1 flex items-center justify-center">
+          <button
+            type="button"
+            aria-label="Drag to reorder task"
+            className="flex cursor-grab items-center justify-center rounded p-0.5 text-muted-foreground/30 opacity-0 transition-opacity group-hover/task:opacity-100 active:cursor-grabbing"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="size-4" />
+          </button>
+        </div>
+
+        {/* 1. Task Name Column (col-span-4) */}
+        <div className="col-span-4 flex min-w-0 items-center gap-2">
           <button
             type="button"
             onClick={onToggle}

@@ -2,6 +2,20 @@
 
 import { Plus, Calendar, Percent } from "lucide-react"
 import { useCallback, useState } from "react"
+import {
+  DndContext,
+  PointerSensor,
+  KeyboardSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
 
 import { dashboardSectionLabelClassName } from "@/components/dashboard/dashboard-section-label-classes"
 import { useDashboardState } from "@/context/dashboard-state"
@@ -17,6 +31,7 @@ export function TasksSection() {
     addTodo,
     updateTodo,
     clearCompletedTodos,
+    reorderTodos,
   } = useDashboardState()
 
   const [newTaskLabel, setNewTaskLabel] = useState("")
@@ -76,6 +91,29 @@ export function TasksSection() {
 
   const completedCount = todos.filter((t) => t.done).length
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        // Require the pointer to move 8px before starting a drag.
+        // This prevents accidental drags when clicking buttons inside the task.
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (over && active.id !== over.id) {
+        reorderTodos(String(active.id), String(over.id))
+      }
+    },
+    [reorderTodos]
+  )
+
   return (
     <article className="flex min-h-0 flex-col rounded-[1.75rem] bg-card p-6 shadow-md ring-1 ring-border/40 lg:p-7">
       <div className="mb-6 flex shrink-0 items-center justify-between gap-3">
@@ -93,7 +131,9 @@ export function TasksSection() {
 
       {todos && todos.length > 0 && (
         <div className="mb-3 grid grid-cols-12 items-center gap-2 border-b border-border/30 px-4 pb-2 text-xs font-bold tracking-wider text-muted-foreground/80 uppercase">
-          <div className="col-span-5">Task Name</div>
+          {/* Spacer for the drag handle column */}
+          <div className="col-span-1" />
+          <div className="col-span-4">Task Name</div>
           <div className="col-span-4 text-center">Timeline</div>
           <div className="col-span-3 text-center">Progress Adjust</div>
         </div>
@@ -110,48 +150,59 @@ export function TasksSection() {
             No focus items yet. Add a task below to get started.
           </p>
         ) : (
-          <ul className="flex flex-col gap-3">
-            {todos.map((todo) => {
-              if (!todo) return null
-              return (
-                <TaskItem
-                  key={todo.id}
-                  todo={todo}
-                  isEditing={editingId === todo.id}
-                  editLabel={editLabel}
-                  editStartDate={editStartDate}
-                  editDueDate={editDueDate}
-                  currentVal={todo.done ? 100 : todo.progress || 0}
-                  overdue={isOverdue(todo.dueDate, todo.done)}
-                  setEditLabel={setEditLabel}
-                  setEditStartDate={setEditStartDate}
-                  setEditDueDate={setEditDueDate}
-                  onToggle={() => toggleTodo(todo.id)}
-                  onDelete={() => deleteTodo(todo.id)}
-                  onStartEdit={() =>
-                    startEditTodo(
-                      todo.id,
-                      todo.label,
-                      todo.startDate || "",
-                      todo.dueDate || ""
-                    )
-                  }
-                  onCancelEdit={() => setEditingId(null)}
-                  onCommitEdit={commitEditTodo}
-                  onDecrement={() =>
-                    updateTodo(todo.id, {
-                      progress: Math.max((todo.progress || 0) - 10, 0),
-                    })
-                  }
-                  onIncrement={() =>
-                    updateTodo(todo.id, {
-                      progress: Math.min((todo.progress || 0) + 10, 100),
-                    })
-                  }
-                />
-              )
-            })}
-          </ul>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={todos.map((t) => t.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <ul className="flex flex-col gap-3">
+                {todos.map((todo) => {
+                  if (!todo) return null
+                  return (
+                    <TaskItem
+                      key={todo.id}
+                      todo={todo}
+                      isEditing={editingId === todo.id}
+                      editLabel={editLabel}
+                      editStartDate={editStartDate}
+                      editDueDate={editDueDate}
+                      currentVal={todo.done ? 100 : todo.progress || 0}
+                      overdue={isOverdue(todo.dueDate, todo.done)}
+                      setEditLabel={setEditLabel}
+                      setEditStartDate={setEditStartDate}
+                      setEditDueDate={setEditDueDate}
+                      onToggle={() => toggleTodo(todo.id)}
+                      onDelete={() => deleteTodo(todo.id)}
+                      onStartEdit={() =>
+                        startEditTodo(
+                          todo.id,
+                          todo.label,
+                          todo.startDate || "",
+                          todo.dueDate || ""
+                        )
+                      }
+                      onCancelEdit={() => setEditingId(null)}
+                      onCommitEdit={commitEditTodo}
+                      onDecrement={() =>
+                        updateTodo(todo.id, {
+                          progress: Math.max((todo.progress || 0) - 10, 0),
+                        })
+                      }
+                      onIncrement={() =>
+                        updateTodo(todo.id, {
+                          progress: Math.min((todo.progress || 0) + 10, 100),
+                        })
+                      }
+                    />
+                  )
+                })}
+              </ul>
+            </SortableContext>
+          </DndContext>
         )}
       </div>
 

@@ -10,6 +10,8 @@ import {
   type ReactNode,
 } from "react"
 
+import { arrayMove } from "@dnd-kit/sortable"
+
 import {
   MOCK_BOOKMARKS,
   MOCK_QUICK_LAUNCH,
@@ -126,13 +128,11 @@ export type DashboardStateContextValue = {
   updateTodo: (id: string, patch: Partial<DashboardTodo>) => void
   deleteTodo: (id: string) => void
   clearCompletedTodos: () => void
+  reorderTodos: (activeId: string, overId: string) => void
   addBookmark: (title: string, href: string) => string
   deleteBookmark: (id: string) => void
   setQuickLaunchItems: (items: QuickLaunchItem[]) => void
-  addQuickLaunchItem: (
-    title: string,
-    url: string
-  ) => string
+  addQuickLaunchItem: (title: string, url: string) => string
   removeQuickLaunchItem: (id: string) => void
   updateQuickLaunchItem: (
     id: string,
@@ -223,6 +223,15 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
     setTodosState((prev) => prev.filter((t) => !t.done))
   }, [])
 
+  const reorderTodos = useCallback((activeId: string, overId: string) => {
+    setTodosState((prev) => {
+      const oldIndex = prev.findIndex((t) => t.id === activeId)
+      const newIndex = prev.findIndex((t) => t.id === overId)
+      if (oldIndex === -1 || newIndex === -1) return prev
+      return arrayMove(prev, oldIndex, newIndex)
+    })
+  }, [])
+
   const addBookmark = useCallback((title: string, href: string) => {
     const t = title.trim()
     const h = href.trim()
@@ -249,26 +258,20 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
     setQuickLaunchState(items)
   }, [])
 
-  const addQuickLaunchItem = useCallback(
-    (title: string, url: string) => {
-      const urlNorm = normalizeQuickLaunchHref(url)
-      const titleTrim = title.trim()
-      const resolvedTitle = titleTrim || fallbackNameFromQuickLaunchHref(urlNorm)
-      if (!resolvedTitle && urlNorm === "#") return ""
-      const id = `q-${crypto.randomUUID()}`
+  const addQuickLaunchItem = useCallback((title: string, url: string) => {
+    const urlNorm = normalizeQuickLaunchHref(url)
+    const titleTrim = title.trim()
+    const resolvedTitle = titleTrim || fallbackNameFromQuickLaunchHref(urlNorm)
+    if (!resolvedTitle && urlNorm === "#") return ""
+    const id = `q-${crypto.randomUUID()}`
 
-      setQuickLaunchState((prev) => {
-        const next = [
-          ...prev,
-          { id, title: resolvedTitle, url: urlNorm },
-        ]
-        localStorage.setItem(QUICK_LAUNCH_KEY, JSON.stringify(next))
-        return next
-      })
-      return id
-    },
-    []
-  )
+    setQuickLaunchState((prev) => {
+      const next = [...prev, { id, title: resolvedTitle, url: urlNorm }]
+      localStorage.setItem(QUICK_LAUNCH_KEY, JSON.stringify(next))
+      return next
+    })
+    return id
+  }, [])
 
   const removeQuickLaunchItem = useCallback((id: string) => {
     setQuickLaunchState((prev) => {
@@ -279,16 +282,12 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const updateQuickLaunchItem = useCallback(
-    (
-      id: string,
-      patch: Partial<Pick<QuickLaunchItem, "title" | "url">>
-    ) => {
+    (id: string, patch: Partial<Pick<QuickLaunchItem, "title" | "url">>) => {
       setQuickLaunchState((prev) => {
         const next = prev.map((q) => {
           if (q.id !== id) return q
           let url = q.url
-          if (patch.url !== undefined)
-            url = normalizeQuickLaunchHref(patch.url)
+          if (patch.url !== undefined) url = normalizeQuickLaunchHref(patch.url)
           let title = q.title
           if (patch.title !== undefined)
             title = patch.title.trim() || fallbackNameFromQuickLaunchHref(url)
@@ -315,6 +314,7 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
       updateTodo,
       deleteTodo,
       clearCompletedTodos,
+      reorderTodos,
       addBookmark,
       deleteBookmark,
       setQuickLaunchItems,
@@ -331,6 +331,7 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
       updateTodo,
       deleteTodo,
       clearCompletedTodos,
+      reorderTodos,
       addBookmark,
       deleteBookmark,
       setQuickLaunchItems,
