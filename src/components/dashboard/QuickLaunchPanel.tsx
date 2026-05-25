@@ -76,6 +76,7 @@ export function QuickLaunchPanel() {
   const [draft, setDraft] = useState<QuickLaunchDraftSlot[]>(() =>
     quickLaunchItems.map((item) => ({
       id: item.id,
+      draftKey: item.id,
       title: item.title,
       url: item.url === "#" ? "" : item.url,
       description: item.description,
@@ -88,12 +89,13 @@ export function QuickLaunchPanel() {
       quickLaunchItems.length > 0
         ? quickLaunchItems.map((item) => ({
             id: item.id,
+            draftKey: item.id,
             title: item.title,
             url: item.url === "#" ? "" : item.url,
             description: item.description,
             favicon: item.favicon,
           }))
-        : [{ title: "", url: "" }]
+        : [{ draftKey: crypto.randomUUID(), title: "", url: "" }]
     )
     setModalOpen(true)
   }
