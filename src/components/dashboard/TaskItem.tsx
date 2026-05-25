@@ -1,9 +1,11 @@
 "use client"
 
-import { Check, Pencil, Trash2 } from "lucide-react"
+import { Check, Pencil, Trash2, GripVertical } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { type DashboardTodo, useDashboardState } from "@/context/dashboard-state"
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 
 interface TaskItemProps {
   todo: DashboardTodo
@@ -27,9 +29,40 @@ export function TaskItem({ todo }: TaskItemProps) {
 
   const cancelEdit = () => setIsEditing(false)
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: todo.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
   return (
-    <li className="group/task flex flex-col gap-2 rounded-xl border border-border/30 bg-muted/20 p-3.5 transition-colors hover:bg-muted/40">
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "group/task flex flex-col gap-2 rounded-xl border border-border/30 bg-muted/20 p-3.5 transition-colors hover:bg-muted/40",
+        isDragging && "z-50 opacity-80 shadow-lg ring-2 ring-primary/30"
+      )}
+    >
       <div className="flex items-center gap-2">
+        <button
+          type="button"
+          aria-label="Drag to reorder task"
+          className="flex cursor-grab items-center justify-center rounded p-0.5 text-muted-foreground/30 opacity-0 transition-opacity group-hover/task:opacity-100 focus-visible:opacity-100 active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-hidden"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className="size-4" />
+        </button>
+
         <button
           type="button"
           onClick={() => toggleTodo(todo.id)}

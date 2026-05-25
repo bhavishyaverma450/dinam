@@ -10,6 +10,8 @@ import {
   type ReactNode,
 } from "react"
 
+import { arrayMove } from "@dnd-kit/sortable"
+
 import {
   MOCK_BOOKMARKS,
   MOCK_QUICK_LAUNCH,
@@ -126,6 +128,7 @@ export type DashboardStateContextValue = {
   updateTodo: (id: string, patch: Partial<DashboardTodo>) => void
   deleteTodo: (id: string) => void
   clearCompletedTodos: () => void
+  reorderTodos: (activeId: string, overId: string) => void
   addBookmark: (title: string, href: string) => string
   deleteBookmark: (id: string) => void
   setQuickLaunchItems: (items: QuickLaunchItem[]) => void
@@ -220,6 +223,15 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
     setTodosState((prev) => prev.filter((t) => !t.done))
   }, [])
 
+  const reorderTodos = useCallback((activeId: string, overId: string) => {
+    setTodosState((prev) => {
+      const oldIndex = prev.findIndex((t) => t.id === activeId)
+      const newIndex = prev.findIndex((t) => t.id === overId)
+      if (oldIndex === -1 || newIndex === -1) return prev
+      return arrayMove(prev, oldIndex, newIndex)
+    })
+  }, [])
+
   const addBookmark = useCallback((title: string, href: string) => {
     const t = title.trim()
     const h = href.trim()
@@ -302,6 +314,7 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
       updateTodo,
       deleteTodo,
       clearCompletedTodos,
+      reorderTodos,
       addBookmark,
       deleteBookmark,
       setQuickLaunchItems,
@@ -318,6 +331,7 @@ export function DashboardStateProvider({ children }: { children: ReactNode }) {
       updateTodo,
       deleteTodo,
       clearCompletedTodos,
+      reorderTodos,
       addBookmark,
       deleteBookmark,
       setQuickLaunchItems,

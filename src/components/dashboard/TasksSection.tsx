@@ -1,7 +1,21 @@
 "use client"
 
 import { Plus } from "lucide-react"
-import { useState } from "react"
+import { useCallback, useState } from "react"
+import {
+  DndContext,
+  PointerSensor,
+  KeyboardSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
 
 import { dashboardSectionLabelClassName } from "@/components/dashboard/dashboard-section-label-classes"
 import { useDashboardState } from "@/context/dashboard-state"
@@ -10,7 +24,7 @@ import { TaskItem } from "./TaskItem"
 import { cn } from "@/lib/utils"
 
 export function TasksSection() {
-  const { todos = [], addTodo, clearCompletedTodos } = useDashboardState()
+  const { todos = [], addTodo, clearCompletedTodos, reorderTodos } = useDashboardState()
   const [newTaskLabel, setNewTaskLabel] = useState("")
 
   const addTask = () => {
@@ -21,6 +35,27 @@ export function TasksSection() {
   }
 
   const completedCount = todos.filter((t) => t.done).length
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (over && active.id !== over.id) {
+        reorderTodos(String(active.id), String(over.id))
+      }
+    },
+    [reorderTodos]
+  )
 
   return (
     <article className="flex min-h-0 flex-col rounded-[1.75rem] bg-card p-6 shadow-md ring-1 ring-border/40 lg:p-7">
@@ -48,12 +83,23 @@ export function TasksSection() {
             No focus items yet. Add a task below to get started.
           </p>
         ) : (
-          <ul className="flex flex-col gap-3">
-            {todos.map((todo) => {
-              if (!todo) return null
-              return <TaskItem key={todo.id} todo={todo} />
-            })}
-          </ul>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={todos.map((t) => t.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <ul className="flex flex-col gap-3">
+                {todos.map((todo) => {
+                  if (!todo) return null
+                  return <TaskItem key={todo.id} todo={todo} />
+                })}
+              </ul>
+            </SortableContext>
+          </DndContext>
         )}
       </div>
 
