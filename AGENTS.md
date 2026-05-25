@@ -357,9 +357,83 @@ Key rules enforced:
 2. **Before submitting PR**: Run `npm run build` to verify production build
 3. **Auto-fix formatting**: Run `npm run format` before committing
 
+## Skills
+
+### Frontend
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS v4
+- shadcn/ui
+- Responsive UI Design
+- Component-based Architecture
+
+### State & Hooks
+- React Hooks
+- useState
+- useEffect
+- useMemo
+- useCallback
+- Context API
+
+### Styling
+- Tailwind CSS
+- class-variance-authority (CVA)
+- Responsive Design
+- OKLCH Color System
+
+### UI & Design
+- Responsive Dashboard Design
+- Dark/Light Theme Handling
+- OKLCH Color System
+- Accessibility (a11y)
+
+### Chrome Extension
+- Chrome Extension Development
+- Browser APIs
+- New Tab Page Customization
+
+### AI-Assisted Development
+- Agentic Development Workflow
+- AI Coding Assistance Compatibility
+
+### Performance
+- Lazy Loading
+- Memoization
+- Optimized React Rendering
+
+### Tooling
+- ESLint
+- Prettier
+- TypeScript Strict Mode
+- npm
+- Git & GitHub
+
+### Build & Development
+- Hot Module Replacement (HMR)
+- Production Builds
+- Type Checking
+- Linting & Formatting
+
+### Libraries & Frameworks
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS v4
+- shadcn/ui
+- class-variance-authority (CVA)
+
+### Best Practices
+- Accessibility (a11y)
+- Reusable Components
+- Clean Code Principles
+- File Structure Consistency
+- Error Handling
+
 ## Additional Notes
 
 - Prioritize readability and maintainability over clever abstractions
 - Keep UI patterns visually consistent with existing components
 - Prefer composition over duplication
 - Test changes before submitting pull requests
+
