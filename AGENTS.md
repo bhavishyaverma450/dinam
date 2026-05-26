@@ -360,70 +360,25 @@ Key rules enforced:
 ## Skills
 
 ### Frontend
-- React 19
-- TypeScript
-- Vite
-- Tailwind CSS v4
-- shadcn/ui
-- Responsive UI Design
-- Component-based Architecture
+[![Frontend Skills](https://skills.syvixor.com/api/icons?i=react,typescript,vite,tailwind,html,css)](https://skills.syvixor.com)
 
-### State & Hooks
-- React Hooks
-- useState
-- useEffect
-- useMemo
-- useCallback
-- Context API
+### UI & Styling
+[![UI Skills](https://skills.syvixor.com/api/icons?i=tailwind,figma)](https://skills.syvixor.com)
 
-### Styling
-- Tailwind CSS
-- class-variance-authority (CVA)
-- Responsive Design
-- OKLCH Color System
-
-### UI & Design
-- Responsive Dashboard Design
-- Dark/Light Theme Handling
-- OKLCH Color System
-- Accessibility (a11y)
-
-### Chrome Extension
-- Chrome Extension Development
-- Browser APIs
-- New Tab Page Customization
-
-### AI-Assisted Development
-- Agentic Development Workflow
-- AI Coding Assistance Compatibility
-
-### Performance
-- Lazy Loading
-- Memoization
-- Optimized React Rendering
+### State Management
+[![State Skills](https://skills.syvixor.com/api/icons?i=react)](https://skills.syvixor.com)
 
 ### Tooling
-- ESLint
-- Prettier
-- TypeScript Strict Mode
-- npm
-- Git & GitHub
+[![Tooling Skills](https://skills.syvixor.com/api/icons?i=git,github,npm,eslint,prettier)](https://skills.syvixor.com)
 
 ### Build & Development
-- Hot Module Replacement (HMR)
-- Production Builds
-- Type Checking
-- Linting & Formatting
+[![Dev Skills](https://skills.syvixor.com/api/icons?i=vite,nodejs)](https://skills.syvixor.com)
 
-### Libraries & Frameworks
-- React 19
-- TypeScript
-- Vite
-- Tailwind CSS v4
-- shadcn/ui
-- class-variance-authority (CVA)
+### Extension Development
+[![Extension Skills](https://skills.syvixor.com/api/icons?i=chrome)](https://skills.syvixor.com)
 
 ### Best Practices
+
 - Accessibility (a11y)
 - Reusable Components
 - Clean Code Principles
