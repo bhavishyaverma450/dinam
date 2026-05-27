@@ -357,25 +357,24 @@ Key rules enforced:
 2. **Before submitting PR**: Run `npm run build` to verify production build
 3. **Auto-fix formatting**: Run `npm run format` before committing
 
-## Skills
+## Recommended Skills
 
-### Frontend
-[![Frontend Skills](https://skills.syvixor.com/api/icons?i=react,typescript,vite,tailwind,html,css)](https://skills.syvixor.com)
+Install relevant development skills from skills.sh for better contribution workflow.
 
-### UI & Styling
-[![UI Skills](https://skills.syvixor.com/api/icons?i=tailwind,figma)](https://skills.syvixor.com)
+### Frontend & UI
 
-### State Management
-[![State Skills](https://skills.syvixor.com/api/icons?i=react)](https://skills.syvixor.com)
+```bash
+npx skills add vercel-labs/agent-skills --skill frontend-design
+npx skills add vercel-labs/agent-skills --skill react-patterns
+npx skills add vercel-labs/agent-skills --skill tailwind
+```
 
-### Tooling
-[![Tooling Skills](https://skills.syvixor.com/api/icons?i=git,github,npm,eslint,prettier)](https://skills.syvixor.com)
+### Code Quality
 
-### Build & Development
-[![Dev Skills](https://skills.syvixor.com/api/icons?i=vite,nodejs)](https://skills.syvixor.com)
-
-### Extension Development
-[![Extension Skills](https://skills.syvixor.com/api/icons?i=chrome)](https://skills.syvixor.com)
+```bash
+npx skills add vercel-labs/agent-skills --skill accessibility
+npx skills add vercel-labs/agent-skills --skill typescript-best-practices
+```
 
 ### Best Practices
 
